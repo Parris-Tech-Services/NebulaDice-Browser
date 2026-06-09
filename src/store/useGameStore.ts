@@ -47,28 +47,42 @@ export const useGameStore = create<StoreState>((set, get) => ({
   error: undefined,
   ws: undefined,
   async startNewSession(seed?: number) {
-    const sessionId = await newSession(seed, false, "webui");
-    const snapshot = await getState(sessionId);
-    set({ sessionId, snapshot, error: undefined });
-    get().connectWS();
+    set({ busy: true, error: undefined });
+    try {
+      get().disconnectWS();
+      const sessionId = await newSession(seed, false, "webui");
+      const snapshot = await getState(sessionId);
+      set({ sessionId, snapshot, busy: false, error: undefined });
+      get().connectWS();
+    } catch (error) {
+      set({ busy: false, error: String(error) });
+    }
   },
   async loadSessionByPath(savePath: string) {
-    const sessionId = await loadSession(savePath);
-    const snapshot = await getState(sessionId);
-    set({ sessionId, snapshot, error: undefined });
-    get().connectWS();
+    set({ busy: true, error: undefined });
+    try {
+      get().disconnectWS();
+      const sessionId = await loadSession(savePath);
+      const snapshot = await getState(sessionId);
+      set({ sessionId, snapshot, busy: false, error: undefined });
+      get().connectWS();
+    } catch (error) {
+      set({ busy: false, error: String(error) });
+    }
   },
   async loadLatestSave() {
     const sessionId = get().sessionId;
-    if (!sessionId) {
-      return;
+    set({ busy: true, error: undefined });
+    try {
+      const saves = await listSaves(sessionId ?? "browser");
+      if (!saves.length) {
+        set({ busy: false, error: "No saves available yet. Make a move to create the local autosave." });
+        return;
+      }
+      await get().loadSessionByPath(saves[0]);
+    } catch (error) {
+      set({ busy: false, error: String(error) });
     }
-    const saves = await listSaves(sessionId);
-    if (!saves.length) {
-      set({ error: "No saves available." });
-      return;
-    }
-    await get().loadSessionByPath(saves[0]);
   },
   connectWS() {
     const sessionId = get().sessionId;

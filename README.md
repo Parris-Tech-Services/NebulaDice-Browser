@@ -7,6 +7,7 @@ Static browser build of NebulaDice.
 - React + Vite interface
 - Browser-native game runtime that mirrors the NebulaDice API contract
 - Quest progression, movement, interaction, combat, resonance, and local save support
+- Random-seed **New** runs, fixed-seed **Demo** runs, and a reliable latest-autosave loader
 - No separate Python backend required for hosted play
 
 ## Local development
