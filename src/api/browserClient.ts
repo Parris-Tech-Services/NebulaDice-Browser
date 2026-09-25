@@ -47,6 +47,27 @@ type BrowserSession = {
 
 const SAVE_PREFIX = "nebula-dice-browser-save:";
 
+const memoryStorage = new Map<string, string>();
+
+function getStorage(): Pick<Storage, "getItem" | "setItem" | "removeItem" | "key"> & { length: number } {
+  if (typeof globalThis.localStorage !== "undefined") {
+    return globalThis.localStorage;
+  }
+  return {
+    get length() {
+      return memoryStorage.size;
+    },
+    getItem: (key) => memoryStorage.get(key) ?? null,
+    setItem: (key, value) => {
+      memoryStorage.set(key, value);
+    },
+    removeItem: (key) => {
+      memoryStorage.delete(key);
+    },
+    key: (index) => [...memoryStorage.keys()][index] ?? null,
+  };
+}
+
 const ITEM_NAMES: Record<string, string> = {
   item_ion_cola: "Ion Cola",
   item_stardust_syrup: "Stardust Syrup",
@@ -566,7 +587,7 @@ function buildSnapshot(session: BrowserSession): GameSnapshot {
 
 function saveSession(session: BrowserSession, slot = "webui"): void {
   const key = `${SAVE_PREFIX}${slot}`;
-  localStorage.setItem(key, JSON.stringify(session));
+  getStorage().setItem(key, JSON.stringify(session));
 }
 
 function cloneSession<T>(value: T): T {
@@ -886,7 +907,7 @@ function applyActionToSession(session: BrowserSession, action: UIAction): Action
 }
 
 function loadSavedSession(savePath: string): BrowserSession {
-  const raw = localStorage.getItem(savePath);
+  const raw = getStorage().getItem(savePath);
   if (!raw) {
     throw new Error(`Save ${savePath} not found.`);
   }
@@ -914,8 +935,9 @@ export async function postBrowserAction(sessionId: string, action: UIAction): Pr
 }
 
 export async function listBrowserSaves(): Promise<string[]> {
-  return Object.keys(localStorage)
-    .filter((key) => key.startsWith(SAVE_PREFIX))
+  const storage = getStorage();
+  return Array.from({ length: storage.length }, (_, index) => storage.key(index))
+    .filter((key): key is string => Boolean(key && key.startsWith(SAVE_PREFIX)))
     .sort()
     .reverse();
 }
