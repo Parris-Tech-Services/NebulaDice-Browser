@@ -129,7 +129,7 @@ const ROOMS: Record<string, BrowserRoom> = {
         id: "obj_patron_map",
         name: "Patron Route Map",
         description:
-          "A brass-backed station map marks the cellar, back room, and private booths. Mira left a note: reroute through the root switch.",
+          "A brass-backed station map marks the cellar, back room, and private booths. Ravon left a note: reroute through the root switch.",
         type: "LORE_TRIGGER",
         state: "ACTIVE",
       },
@@ -166,12 +166,12 @@ const ROOMS: Record<string, BrowserRoom> = {
     id: "ROOM_BACK_ROOM",
     name: "Back Room",
     description:
-      "The back room smells of ozone and candlewax. Mira's terminal is awake, and a root-switch is wrapped in silver grounding wire.",
+      "The back room smells of ozone and candlewax. Ravon's terminal is awake, and a root-switch is wrapped in silver grounding wire.",
     exits: { east: "ROOM_002" },
     interactables: [
       {
         id: "obj_mira_terminal",
-        name: "Mira's Terminal",
+        name: "Ravon's Terminal",
         description:
           "A rune-inscribed terminal flickers with encrypted chat windows and a stalled scrub bar waiting for manual confirmation.",
         type: "DEVICE",
@@ -189,7 +189,7 @@ const ROOMS: Record<string, BrowserRoom> = {
         id: "obj_logbook",
         name: "Encrypted Logbook",
         description:
-          "The shift log names the cybernetic elves as former maintenance adepts. Mira's last entry warns Quixon against the first easy ending.",
+          "The shift log names the cybernetic elves as former maintenance adepts. Ravon's last entry warns Quixon against the first easy ending.",
         type: "LOOT",
         state: "ACTIVE",
         loot: ["item_datapad_encrypted", "item_keycard_blue"],
@@ -236,7 +236,7 @@ const BASE_OBJECTIVES: ObjectiveState[][] = [
     },
     {
       id: "OBJ_FIND_MIRA",
-      text: "Access the Back Room or establish contact with Mira.",
+      text: "Access the Back Room or establish contact with Ravon.",
       status: "VISIBLE",
       required: true,
     },
@@ -272,7 +272,7 @@ const BASE_OBJECTIVES: ObjectiveState[][] = [
   [
     {
       id: "OBJ_BLUE_PILL_READY",
-      text: "Blue Pill readiness: Elves defeated, grid repaired, Mira informed.",
+      text: "Blue Pill readiness: Elves defeated, grid repaired, Ravon informed.",
       status: "VISIBLE",
       required: false,
     },
@@ -330,7 +330,7 @@ function seedEntities(): BrowserSession["entities"] {
     },
     "E-003": {
       id: "E-003",
-      name: "Kael",
+      name: "Vureim",
       hp: 68,
       max_hp: 68,
       ac: 17,
@@ -381,7 +381,7 @@ function seedEntities(): BrowserSession["entities"] {
     },
     "E-006": {
       id: "E-006",
-      name: "Mira",
+      name: "Ravon",
       hp: 58,
       max_hp: 58,
       ac: 14,
@@ -644,7 +644,7 @@ function completeFindMira(session: BrowserSession): void {
   if (setObjective(session, "OBJ_FIND_MIRA", "COMPLETE")) {
     session.flags.MIRA_CONTACT = "True";
     addItem(session, "item_illegal_modded_d20");
-    pushLog(session, "Mira answers through static and slips you an illegal modded d20 for the long night ahead.");
+    pushLog(session, "Ravon answers through static and slips you an illegal modded d20 for the long night ahead.");
   }
 }
 
@@ -730,7 +730,7 @@ function handleInteract(session: BrowserSession, interactableId: string): string
     completeFindMira(session);
     session.immersionIntegrity = Math.min(100, session.immersionIntegrity + 4);
     return [
-      "Mira's terminal unseals. Her voice comes through in clipped bursts: break the ritual, then choose what kind of truth this station deserves.",
+      "Ravon's terminal unseals. Her voice comes through in clipped bursts: break the ritual, then choose what kind of truth this station deserves.",
     ];
   }
   if (interactable.id === "obj_root_switch") {
@@ -841,7 +841,7 @@ function handleCommand(session: BrowserSession, text: string): string[] {
   if (command.startsWith("talk")) {
     if (command.includes("mira") || command.includes("e-006")) {
       completeFindMira(session);
-      return ["Mira warns that every clean ending here is hiding blood under the polish."]; 
+      return ["Ravon warns that every clean ending here is hiding blood under the polish."]; 
     }
     if (command.includes("zara") || command.includes("e-002")) {
       return ["Zara-7 says the station can be stabilised, but only after the ritual channel goes dark."];
