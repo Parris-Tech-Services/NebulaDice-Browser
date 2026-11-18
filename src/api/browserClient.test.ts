@@ -12,7 +12,7 @@ describe("browserClient", () => {
     expect(snapshot.available_actions.movement).toContain("south");
   });
 
-  test("can progress from Mira contact to defeating the ritual triad", async () => {
+  test("can progress from Ravon contact to defeating the ritual triad", async () => {
     const sessionId = await newBrowserSession(12345);
 
     await postBrowserAction(sessionId, { type: "EXAMINE", payload: { interactable_id: "obj_viewport" } });
